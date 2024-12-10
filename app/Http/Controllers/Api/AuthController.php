@@ -15,13 +15,17 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthController extends Controller
 {
 
-    /* Register method to Register a User */
+    /* Register api
+    *
+    *@param RegisterRequest $request
+    *@return JsonResponse
+    */
     public function register(RegisterRequest $request)
     {
         DB::beginTransaction();
         try {
             $validated = $request->validated();
-            $user = User::create($validated);
+            $user = User::create($validated)->assignRole('Customer');
             $user->token = $user->createToken('MyApp')->accessToken;
             DB::commit();
             return response()->json([
@@ -37,7 +41,11 @@ class AuthController extends Controller
         }
     }
 
-    /* Login Method to sign in User */
+    /* Login api
+    *
+    *@param LoginRequest $request
+    *@return JsonResponse
+    */
     public function login(LoginRequest $request)
     {
         $validated = $request->validated();
@@ -54,7 +62,11 @@ class AuthController extends Controller
         ], Response::HTTP_UNAUTHORIZED);
     }
 
-    /* Logout method */
+    /* Logout api
+    *
+    *@param Request $request
+    *@return JsonResponse
+    */
     public function logout(Request $request)
     {
         $user = $request->user();
